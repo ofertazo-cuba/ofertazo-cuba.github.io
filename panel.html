@@ -260,7 +260,7 @@
       ).trim();
     }
 
-    // FUNCIÓN DE VERIFICACIÓN CONECTADA AL BACKEND SEGURO EN TERMUX
+    // VERIFICACIÓN DIRECTA CONTRA SUPABASE (FUNCIONA EN CUALQUIER DISPOSITIVO MÓVIL)
     async function verificarPIN() {
       if (!negocioActual) {
         alert("Cargando datos del negocio, espera un momento...");
@@ -273,27 +273,12 @@
         return;
       }
 
-      try {
-        const response = await fetch('http://localhost:3000/api/tienda/login', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ slug: TIENDA_SLUG, pin: pinIngresado })
-        });
+      const pinReal = obtenerPinNegocio();
 
-        const data = await response.json();
-
-        if (response.ok && data.success) {
-          sessionStorage.setItem("tienda_token", data.token);
-          negocioActual = data.negocio;
-          mostrarPanel();
-        } else {
-          alert(data.message || "Contraseña incorrecta. Inténtalo nuevamente.");
-        }
-      } catch (err) {
-        console.error("Error conectando con el backend:", err);
-        alert("⚠️ No se pudo conectar con el servidor backend en Termux. Asegúrate de que 'node server.js' esté activo.");
+      if (pinReal !== "" && pinIngresado === pinReal) {
+        mostrarPanel();
+      } else {
+        alert("Contraseña o PIN incorrecto. Inténtalo nuevamente.");
       }
     }
 
